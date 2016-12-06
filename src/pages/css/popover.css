@@ -1,0 +1,94 @@
+body {
+    min-width: 400px;
+    font-family: verdana, arial, serif;
+    margin: 0;
+}
+
+#title {
+    font-size: 15px;
+    float: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 280px;
+}
+
+#repost {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+}
+
+#repostLink {
+    text-decoration: none;
+    border-radius: 3px;
+    display: block;
+    background: linear-gradient(to bottom, #999999, #bbbbbb);
+    color: white;
+    width: 80px;
+    height: 20px;
+    font-size: 12px;
+    text-align: center;
+    padding-top: 5px;
+    font-weight: bold;
+}
+
+#repostLink:hover {
+    background: linear-gradient(to bottom, #6699FF, #66CCFF);
+    -webkit-transition: background 2s;
+    transition: background 2s;
+}
+
+.discussion {
+    list-style-type: none;
+    padding: 10px;
+    background: #eeeeee;  /* chromy */
+    border-bottom: 1px solid #bbbbbb;  /* blue */
+    border-top: 1px solid #ffffff;
+    display: flex;
+}
+
+.discussion:hover {
+    background-color: #cccccc;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #999999;
+}
+
+.link {
+    text-decoration: none;
+    display: block;
+    color: #444444;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#data {
+    padding: 15px;
+}
+
+.age {
+    font-size: 10px;
+    color: #909090;
+    height: 12px;
+    margin: 5px 0 0 0;
+}
+
+.leftColumn {
+    min-width: 60px;
+}
+
+.rightColumn {
+    margin-left: 10px;
+}
+
+.score {
+    font-size: 14px;
+    text-align: center;
+    background: linear-gradient(to bottom, white, #eeeeee);
+    /*color: #FF8000;*/
+    color: #FF3333;
+    box-shadow: 0 1px 3px #888888;
+    border-radius: 8px;
+    padding: 3px 5px 3px 5px;
+    margin: 3px;
+}

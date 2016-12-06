@@ -1,0 +1,46 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "bash",
+    "isShellCommand": true,
+    "args": [
+        "-c"
+    ],
+    "echoCommand": true,
+    "tasks": [
+		{
+			"args": [
+				"${workspaceRoot}/node_modules/.bin/webpack -d --display-modules --progress"
+			],
+			"suppressTaskName": true,
+			"taskName": "webpack dev",
+			"isBuildCommand": true
+		},
+		{
+			"args": [
+				"${workspaceRoot}/node_modules/.bin/webpack -p --display-modules --progress"
+			],
+			"suppressTaskName": true,
+			"taskName": "webpack dist",
+			"isBuildCommand": false
+		},
+		{
+			"args": [
+				"open -a 'Google Chrome' 'http://reload.extensions'"
+			],
+			"suppressTaskName": true,
+			"taskName": "reload chrome",
+			"isBuildCommand": false
+		},
+		{
+			"args": [
+				"osascript -e 'tell application \"System Events\"' -e 'tell process \"Safari\"' -e 'click menu item \"Show Extension Builder\" of menu \"Develop\" of menu bar 1' -e 'click button \"Reload\" of UI element 0 of window \"Extension Builder\"' -e 'click button 1 of window \"Extension Builder\"' -e 'end tell' -e 'end tell'"
+			],
+			"suppressTaskName": true,
+			"taskName": "reload safari",
+			"isBuildCommand": false
+		}
+	],
+    "showOutput": "always"
+}

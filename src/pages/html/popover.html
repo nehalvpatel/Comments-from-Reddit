@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Comments from Reddit</title>
+        <script src="../js/popover.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <div id="data">
+                <span id="title">{{ title }}</span>&nbsp;&nbsp;&nbsp;
+                <span id="repost"><a id="repostLink" v-on:click="openURL" :href="resubmitURL" title="Post to Reddit" target="_blank">Repost</a></span>
+            </div>
+            <div id="discussions">
+                <li class="discussion" v-for="link in links">
+                    <div class="leftColumn">
+                        <div class="score">{{ link.score }}</div>
+                    </div>
+                    <div class="rightColumn">
+                        <a class="link" v-on:click="openURL" :href="link.permalink" :title="link.permalink" target="_blank">{{ link.title }}</a>
+                        <div class="age">{{ link.age }},&nbsp;&nbsp;{{ link.comments }} comments,&nbsp;&nbsp;/r/{{ link.subreddit }}</div>
+                    <div>
+                </li>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+    <dict>
+		<key>Title</key>
+		<string>Order discussions</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>num_comments</string>
+		<key>Key</key>
+		<string>orderUsing</string>
+		<key>Secure</key>
+		<false/>
+		<key>Title</key>
+		<string>using</string>
+		<key>Titles</key>
+		<array>
+            <string>Discussion age</string>
+			<string>Link score</string>
+			<string>Number of comments</string>
+		</array>
+		<key>Type</key>
+		<string>RadioButtons</string>
+		<key>Values</key>
+		<array>
+            <string>created_utc</string>
+			<string>score</string>
+			<string>num_comments</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>desc</string>
+		<key>Key</key>
+		<string>orderIn</string>
+		<key>Title</key>
+		<string>in</string>
+		<key>Titles</key>
+		<array>
+			<string>Ascending order</string>
+			<string>Descending order</string>
+		</array>
+		<key>Type</key>
+		<string>RadioButtons</string>
+		<key>Values</key>
+		<array>
+			<string>asc</string>
+			<string>desc</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Domain blacklist</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>example.com example.net</string>
+		<key>Key</key>
+		<string>blacklist</string>
+		<key>Title</key>
+		<string>ignore</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+</array>
+</plist>
