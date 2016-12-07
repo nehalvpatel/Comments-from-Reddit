@@ -1,22 +1,15 @@
 body {
-    min-width: 400px;
     font-family: verdana, arial, serif;
     margin: 0;
 }
 
 #title {
     font-size: 15px;
-    float: left;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    width: 280px;
-}
-
-#repost {
-    position: absolute;
-    right: 12px;
-    top: 12px;
+    width: 310px;
+    margin: auto 0 auto 5px;
 }
 
 #repostLink {
@@ -42,28 +35,26 @@ body {
 .discussion {
     list-style-type: none;
     padding: 10px;
-    background: #eeeeee;  /* chromy */
-    border-bottom: 1px solid #bbbbbb;  /* blue */
-    border-top: 1px solid #ffffff;
+    background: rgba(255, 255, 255, 0.5);
     display: flex;
 }
 
 .discussion:hover {
-    background-color: #cccccc;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #999999;
+    background: rgba(204, 204, 204, 0.5);
 }
 
 .link {
     text-decoration: none;
-    display: block;
     color: #444444;
     font-size: 13px;
     font-weight: bold;
 }
 
 #data {
-    padding: 15px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    vertical-align: middle;
 }
 
 .age {
@@ -84,9 +75,8 @@ body {
 .score {
     font-size: 14px;
     text-align: center;
-    background: linear-gradient(to bottom, white, #eeeeee);
-    /*color: #FF8000;*/
-    color: #FF3333;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(238, 238, 238, 0.9));
+    color: #FF8000;
     box-shadow: 0 1px 3px #888888;
     border-radius: 8px;
     padding: 3px 5px 3px 5px;

@@ -27,8 +27,12 @@
 			<dict>
 				<key>Filename</key>
 				<string>html/popover.html</string>
+				<key>Height</key>
+				<integer>550</integer>
 				<key>Identifier</key>
 				<string>discussionsPopover</string>
+				<key>Width</key>
+				<integer>425</integer>
 			</dict>
 		</array>
 		<key>Toolbar Items</key>
