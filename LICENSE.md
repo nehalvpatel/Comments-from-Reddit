@@ -1,5 +1,6 @@
  Comments from Reddit - An extension to find existing Reddit discussions and
  comments.
+
     Copyright (C) 2016  Nehal Patel
 
     This program is free software: you can redistribute it and/or modify
@@ -19,6 +20,7 @@
 
  Reddit Check - This program is a Chrome extension which allows you to 
  check whether current URL is submitted on reddit.com.
+
     Copyright (C) 2010  Hrishikesh Bakshi
 
     This program is free software: you can redistribute it and/or modify
