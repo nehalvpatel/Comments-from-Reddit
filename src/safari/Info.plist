@@ -47,7 +47,7 @@
 				<key>Include By Default</key>
 				<true/>
 				<key>Label</key>
-				<string>Reddit Comments</string>
+				<string>Comments from Reddit</string>
 				<key>Popover</key>
 				<string>discussionsPopover</string>
 			</dict>
