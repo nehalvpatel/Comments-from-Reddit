@@ -1,18 +1,14 @@
+# Comments from Reddit
+This extension lets you find existing Reddit discussions and go directly to them.
 
-    Reddit-check
+## Screenshot
+<img src="/popover.png?raw=true" width="450">
 
- Reddit-check is a Google Chrome / Chromium extension.
- This extension lets you check whether the current URL you are on has been 
- submitted to reddit. You can jump right into the discussion if the the link 
- has already been submitted. Otherwise a 'Submit this link' option is provided 
- to go to reddit link submission page.
+## Options
+<img src="/options.png?raw=true" width="428">
+                                        
 
- It is distributed under the GNU General Public License - see the 
- accompanying LICENSE file for more details.
- 
- Contact: bakshi.hrishikesh@gmail.com
- 
- Extension install link: https://chrome.google.com/extensions/detail/mllceaiaedaingchlgolnfiibippgkmj/
+## Copyright
+Forked from [reddit-check](https://github.com/hsbakshi/reddit-check) by `Hrishikesh Bakshi`.
 
- Contributers:
-  Akshay Anand (https://github.com/xaksis)
+All modifications copyrighted to `Nehal Patel`.
