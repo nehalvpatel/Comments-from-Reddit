@@ -14,7 +14,7 @@
             <div id="discussions">
                 <li class="discussion" v-for="link in links">
                     <div class="leftColumn">
-                        <div class="score">{{ link.score }}</div>
+                        <div class="score" v-bind:class="{ bigScore: forceScoreWidth }">{{ link.score }}</div>
                     </div>
                     <div class="rightColumn">
                         <a class="link" v-on:click="openURL" :href="link.permalink" :title="link.permalink" target="_blank">{{ link.title }}</a>

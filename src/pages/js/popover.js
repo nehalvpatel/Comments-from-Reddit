@@ -24,13 +24,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
         data: {
             title: "Placeholder Title",
             resubmitURL: "",
+            forceScoreWidth: false,
             links: [{
                 permalink: "",
                 title: "You shouldn't be seeing this.",
                 score: "0",
                 age: "0 days ago",
                 comments: 0,
-                subreddit: "commentsfromreddit"
+                subreddit: "CommentsfromReddit"
             }]
         },
         methods: {
@@ -65,9 +66,17 @@ function renderDiscussions(discussions, tab) {
         });
     }
 
+    popover.title = tab.title;
+    popover.resubmitURL = "https://www.reddit.com/submit?resubmit=true&url=" + encodeURIComponent(tab.url);
+    popover.forceScoreWidth = false;
+
     let permalinks = [];
     for (let i = 0; i < keysSorted.length; i++) {
         let entry = discussions[keysSorted[i]].data;
+
+        if (entry.score > 100000) {
+            popover.forceScoreWidth = true;
+        }
 
         permalinks[i] = {
             permalink: "https://www.reddit.com" + entry.permalink,
@@ -79,8 +88,6 @@ function renderDiscussions(discussions, tab) {
         };
     }
 
-    popover.title = tab.title;
-    popover.resubmitURL = "https://www.reddit.com/submit?resubmit=true&url=" + encodeURIComponent(tab.url);
     popover.links = permalinks;
 
     window.scrollTo(0, 0);
