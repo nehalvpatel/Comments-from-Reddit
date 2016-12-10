@@ -43,11 +43,16 @@ function setBadge(badge, disabled) {
     }
 }
 
-function getURLInfo(newUrl) {
+function getURLInfo(newUrl, forceRefresh = false) {
     let currentPosts = [];
 
     let urls = constructURLs(newUrl);
     for (let i = 0; i < urls.length; i++) {
+        if (forceRefresh) {
+            currentPosts = currentPosts.concat(fetchPosts(urls[i]));
+            continue;
+        }
+
         let cacheCheck = localStorage.getItem(urls[i]);
         if (cacheCheck) {
             let cachedPosts = JSON.parse(cacheCheck);
@@ -72,6 +77,10 @@ function getURLInfo(newUrl) {
         setBadge(discussionsCount, false);
     } else {
         setBadge(null, true);
+    }
+
+    if (forceRefresh) {
+        pushDiscussions();
     }
 }
 
@@ -129,8 +138,16 @@ function fetchPosts(url) {
     }
 }
 
+window.addEventListener("message", function (msg) {
+    getURLInfo(msg.data.url, true);
+}, false);
+
 safari.application.addEventListener("popover", popoverEvent, false);
 function popoverEvent(event) {
+    pushDiscussions();
+}
+
+function pushDiscussions() {
     safari.extension.popovers[0].contentWindow.postMessage({
         discussions: discussions,
         tab: {

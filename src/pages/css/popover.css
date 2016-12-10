@@ -3,6 +3,11 @@ body {
     margin: 0;
 }
 
+.content-apart {
+    display: flex;
+    justify-content: space-between;
+}
+
 #title {
     font-size: 15px;
     text-overflow: ellipsis;
@@ -11,27 +16,40 @@ body {
     margin: auto 5px;
 }
 
-#repost {
+#buttons {
     margin-left: 10px;
 }
 
-#repostLink {
+.link-button {
     text-decoration: none;
     border-radius: 3px;
-    display: block;
-    background: linear-gradient(to bottom, #999999, #bbbbbb);
+    background: linear-gradient(to bottom, #999999, #bbbbbb 10%);
     color: white;
-    width: 80px;
     font-size: 12px;
     text-align: center;
     padding: 5px;
     font-weight: bold;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-#repostLink:hover {
-    background: linear-gradient(to bottom, #6699FF, #66CCFF);
+.link-button:hover {
+    background: linear-gradient(to bottom, #6699FF, #66CCFF 20%);
     -webkit-transition: background 2s;
     transition: background 2s;
+}
+
+#refresh-image {
+    max-width: 10px;
+}
+
+#refresh-button {
+    width: 20px;
+}
+
+#repost-button {
+    margin-left: 10px;
+    padding: 5px 10px;
 }
 
 .discussion {
@@ -54,8 +72,6 @@ body {
 
 #data {
     padding: 10px;
-    display: flex;
-    justify-content: space-between;
     vertical-align: middle;
 }
 

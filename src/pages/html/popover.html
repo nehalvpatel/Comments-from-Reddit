@@ -7,9 +7,12 @@
     </head>
     <body>
         <div id="app">
-            <div id="data">
+            <div id="data" class="content-apart">
                 <span id="title">{{ title }}</span>
-                <span id="repost"><a id="repostLink" v-on:click="openURL" :href="resubmitURL" title="Post to Reddit" target="_blank">Repost</a></span>
+                <span id="buttons" class="content-apart">
+                    <a id="refresh-button" class="link-button" v-on:click.prevent="refreshDiscussions" href="javascript:;" title="Refresh Discussions"><img id="refresh-image" src="../img/refresh.png"></a>
+                    <a id="repost-button" class="link-button" v-on:click.prevent="openURL" :href="resubmitURL" title="Post to Reddit">Repost</a>
+                </span>
             </div>
             <div id="discussions">
                 <li class="discussion" v-for="link in links">
@@ -17,7 +20,7 @@
                         <div class="score" v-bind:class="{ bigScore: forceScoreWidth }">{{ link.score }}</div>
                     </div>
                     <div class="rightColumn">
-                        <a class="link" v-on:click="openURL" :href="link.permalink" :title="link.permalink" target="_blank">{{ link.title }}</a>
+                        <a class="link" v-on:click.prevent="openURL" :href="link.permalink">{{ link.title }}</a>
                         <div class="age">{{ link.age }},&nbsp;&nbsp;{{ link.comments }} comments,&nbsp;&nbsp;/r/{{ link.subreddit }}</div>
                     </div>
                 </li>
