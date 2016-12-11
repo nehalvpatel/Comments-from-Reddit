@@ -23,7 +23,7 @@ body {
 .link-button {
     text-decoration: none;
     border-radius: 3px;
-    background: linear-gradient(to bottom, #999999, #bbbbbb 10%);
+    background: linear-gradient(to bottom, #999999, #aaaaaa 10%);
     color: white;
     font-size: 12px;
     text-align: center;
@@ -76,9 +76,8 @@ body {
 }
 
 .age {
-    font-size: 10px;
-    color: #909090;
-    height: 12px;
+    font-size: 11px;
+    color: #696969;
     margin: 5px 0 0 0;
 }
 
