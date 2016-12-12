@@ -23,7 +23,7 @@ body {
 .link-button {
     text-decoration: none;
     border-radius: 3px;
-    background: linear-gradient(to bottom, #999999, #aaaaaa 10%);
+    background: linear-gradient(to bottom, rgba(153, 153, 153, 1), rgba(170, 170, 170, 1) 10%);
     color: white;
     font-size: 12px;
     text-align: center;
@@ -34,7 +34,7 @@ body {
 }
 
 .link-button:hover {
-    background: linear-gradient(to bottom, #6699FF, #66CCFF 20%);
+    background: linear-gradient(to bottom, rgba(255, 128, 0, 0.9), rgba(255, 178, 0, 0.9) 20%);
     -webkit-transition: background 2s;
     transition: background 2s;
 }
@@ -55,12 +55,12 @@ body {
 .discussion {
     list-style-type: none;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
     display: flex;
 }
 
 .discussion:hover {
-    background: rgba(204, 204, 204, 0.5);
+    background: rgba(204, 204, 204, 0.3);
 }
 
 .link {
@@ -88,11 +88,11 @@ body {
 .score {
     font-size: 14px;
     text-align: center;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(238, 238, 238, 0.9));
-    color: #FF8000;
+    background: linear-gradient(to bottom, rgba(255, 178, 0, 0.9), rgba(255, 128, 0, 0.9));
+    color: white;
     box-shadow: 0 1px 3px #888888;
     border-radius: 8px;
-    padding: 3px 5px 3px 5px;
+    padding: 4px 5px;
     margin: 5px;
     min-width: 40px;
 }
