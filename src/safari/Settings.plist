@@ -54,6 +54,22 @@
 	</dict>
 	<dict>
 		<key>Title</key>
+		<string>Cache Reddit requests for</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>3600</string>
+		<key>Key</key>
+		<string>cacheTimeout</string>
+		<key>Title</key>
+		<string>seconds</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>Title</key>
 		<string>Domain blacklist</string>
 		<key>Type</key>
 		<string>Group</string>

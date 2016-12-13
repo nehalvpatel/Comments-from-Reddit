@@ -1,17 +1,21 @@
 localStorage.clear();
 const ytRegex = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-var discussions = {};
-
 var domainBlacklist = safari.extension.settings.domainBlacklist.split(" ");
 var subredditBlacklist = safari.extension.settings.subredditBlacklist.toUpperCase().split(" ");
+var cacheTimeout = safari.extension.settings.cacheTimeout;
+var discussions = {};
+
 safari.extension.settings.addEventListener("change", settingChanged, false);
 function settingChanged(event) {
     if (event.key == "domainBlacklist") {
         domainBlacklist = event.newValue.toUpperCase().split(" ");
     } else if (event.key == "subredditBlacklist") {
         subredditBlacklist = event.newValue.toUpperCase().split(" ");
+    } else if (event.key == "cacheTimeout") {
+        cacheTimeout = event.newValue;
     }
 
+    // refresh current page's posts to reflect new settings
     lastUrl = "";
     getURLInfo(safari.application.activeBrowserWindow.activeTab.url.split("#")[0]);
 }
@@ -142,7 +146,7 @@ function fetchPosts(searchURL, forceRefresh) {
             if (cacheCheck) {
                 let cachedPosts = JSON.parse(cacheCheck);
 
-                if ((Math.floor(Date.now() / 1000) - cachedPosts["time"]) <= 3600) {
+                if ((Math.floor(Date.now() / 1000) - cachedPosts["time"]) <= cacheTimeout) {
                     performRequest = false;
                     resolve(cachedPosts["posts"]);
                 }
