@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             title: "Placeholder Title",
             resubmitURL: "",
             forceScoreWidth: false,
+            isRefreshing: false,
+            spinRefreshIcon: false,
             links: [{
                 permalink: "",
                 title: "You shouldn't be seeing this.",
@@ -36,7 +38,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         methods: {
             refreshDiscussions: function(event) {
-                popover.links = [];
+                popover.isRefreshing = true;
+                popover.spinRefreshIcon = true;
 
                 safari.extension.globalPage.contentWindow.postMessage({
                     action: "refresh",
@@ -46,6 +49,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             openURL: function (event) {
                 safari.self.hide();
                 safari.application.activeBrowserWindow.openTab().url = event.target.href;
+            },
+            animationTick: function(event) {
+                popover.spinRefreshIcon = popover.isRefreshing;
             }
         }
     });
@@ -79,6 +85,7 @@ function renderDiscussions(discussions, tab) {
     popover.title = tab.title;
     popover.resubmitURL = "https://www.reddit.com/submit?resubmit=true&url=" + encodeURIComponent(currentUrl);
     popover.forceScoreWidth = false;
+    popover.isRefreshing = false;
 
     let permalinks = [];
     for (let i = 0; i < keysSorted.length; i++) {

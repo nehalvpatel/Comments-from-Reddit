@@ -10,7 +10,7 @@
             <div id="data" class="content-apart">
                 <span id="title">{{ title }}</span>
                 <span id="buttons" class="content-apart">
-                    <a id="refresh-button" class="link-button" v-on:click.prevent="refreshDiscussions" href="javascript:;" title="Refresh Discussions"><img id="refresh-image" src="../img/refresh.png"></a>
+                    <a id="refresh-button" class="link-button" v-on:click.prevent="refreshDiscussions" href="javascript:;" title="Refresh Discussions"><img id="refresh-image" v-bind:class="{ spinInfinite: spinRefreshIcon }" v-on:animationiteration="animationTick" src="../img/refresh.png"></a>
                     <a id="repost-button" class="link-button" v-on:click.prevent="openURL" :href="resubmitURL" title="Post to Reddit">Repost</a>
                 </span>
             </div>
@@ -24,6 +24,7 @@
                         <div class="age">{{ link.age }},&nbsp;&nbsp;{{ link.comments }} comments,&nbsp;&nbsp;/r/{{ link.subreddit }}</div>
                     </div>
                 </li>
+                <div id="loader" v-show="spinRefreshIcon"></div>
             </div>
         </div>
     </body>
