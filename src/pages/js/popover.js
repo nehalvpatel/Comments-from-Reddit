@@ -88,14 +88,14 @@ function renderDiscussions(discussions, tab) {
             popover.forceScoreWidth = true;
         }
 
-        permalinks[i] = {
+        permalinks.push({
             permalink: "https://www.reddit.com" + entry.permalink,
             title: entry.title,
             score: formatScore(entry.score),
             age: formatAge(new Date(entry.created_utc * 1000)),
             comments: entry.num_comments.toLocaleString(),
             subreddit: entry.subreddit,
-        };
+        });
     }
 
     popover.links = permalinks;

@@ -2,15 +2,18 @@ localStorage.clear();
 const ytRegex = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 var discussions = {};
 
-var blacklist = safari.extension.settings.blacklist.split(" ");
+var domainBlacklist = safari.extension.settings.domainBlacklist.split(" ");
+var subredditBlacklist = safari.extension.settings.subredditBlacklist.toUpperCase().split(" ");
 safari.extension.settings.addEventListener("change", settingChanged, false);
 function settingChanged(event) {
-    if (event.key == "blacklist") {
-        blacklist = event.newValue.split(" ");
-
-        lastUrl = "";
-        getURLInfo(safari.application.activeBrowserWindow.activeTab.url.split("#")[0]);
+    if (event.key == "domainBlacklist") {
+        domainBlacklist = event.newValue.toUpperCase().split(" ");
+    } else if (event.key == "subredditBlacklist") {
+        subredditBlacklist = event.newValue.toUpperCase().split(" ");
     }
+
+    lastUrl = "";
+    getURLInfo(safari.application.activeBrowserWindow.activeTab.url.split("#")[0]);
 }
 
 var lastUrl = null;
@@ -71,7 +74,7 @@ function setBadge(badge, disabled) {
 function getURLInfo(newUrl, forceRefresh = false) {
     return new Promise(function(resolve, reject) {
         let currentURL = new URL(newUrl);
-        if (blacklist.indexOf(currentURL.hostname) > -1) {
+        if (domainBlacklist.includes(currentURL.hostname.toUpperCase())) {
             discussions = {};
 
             resolve();
@@ -86,7 +89,11 @@ function getURLInfo(newUrl, forceRefresh = false) {
 
                 discussions = {};
                 for (let i = 0; i < posts.length; i++) {
-                    discussions[posts[i].data.name] = posts[i];
+                    if (posts[i].data.subreddit) {
+                        if (subredditBlacklist.includes(posts[i].data.subreddit.toUpperCase()) === false) {
+                            discussions[posts[i].data.name] = posts[i];
+                        }
+                    }
                 }
 
                 resolve();

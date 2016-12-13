@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-    <dict>
+	<dict>
 		<key>Title</key>
 		<string>Order discussions</string>
 		<key>Type</key>
@@ -19,7 +19,7 @@
 		<string>using</string>
 		<key>Titles</key>
 		<array>
-            <string>Discussion age</string>
+			<string>Discussion age</string>
 			<string>Link score</string>
 			<string>Number of comments</string>
 		</array>
@@ -27,7 +27,7 @@
 		<string>RadioButtons</string>
 		<key>Values</key>
 		<array>
-            <string>created_utc</string>
+			<string>created_utc</string>
 			<string>score</string>
 			<string>num_comments</string>
 		</array>
@@ -62,7 +62,23 @@
 		<key>DefaultValue</key>
 		<string>example.com example.net</string>
 		<key>Key</key>
-		<string>blacklist</string>
+		<string>domainBlacklist</string>
+		<key>Title</key>
+		<string>ignore</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Subreddit blacklist</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>example example2</string>
+		<key>Key</key>
+		<string>subredditBlacklist</string>
 		<key>Title</key>
 		<string>ignore</string>
 		<key>Type</key>
