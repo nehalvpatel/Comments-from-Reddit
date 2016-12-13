@@ -7,28 +7,53 @@ safari.extension.settings.addEventListener("change", settingChanged, false);
 function settingChanged(event) {
     if (event.key == "blacklist") {
         blacklist = event.newValue.split(" ");
+
+        lastUrl = "";
+        getURLInfo(safari.application.activeBrowserWindow.activeTab.url.split("#")[0]);
     }
 }
 
-var lastUrl = "";
-setInterval(checkURL, 1000);
+var lastUrl = null;
 function checkURL() {
+    let newUrl;
     if (safari.application.activeBrowserWindow.activeTab.url) {
-        let newUrl = safari.application.activeBrowserWindow.activeTab.url.split("#")[0];
-        if (lastUrl !== newUrl) {
-            let currentURL = new URL(newUrl);
-
-            if (blacklist.indexOf(currentURL.hostname) > -1) {
-                setBadge(null, true);
-            } else {
-                getURLInfo(newUrl);
-            }
-
-            lastUrl = newUrl;
-        }
+        newUrl = safari.application.activeBrowserWindow.activeTab.url.split("#")[0];
     } else {
-        discussions = {};
-        setBadge(null, true);
+        newUrl = null;
+    }
+
+    if (lastUrl === newUrl) {
+        // same URL; do nothing
+        setTimeout(checkURL, 1000);
+    } else {
+        // new URL; update badge and discussions
+        if (newUrl === null) {
+            // null URL; disable badge and clear discussions
+            discussions = {};
+            lastUrl = null;
+            disableBadge();
+            setTimeout(checkURL, 1000);
+        } else {
+            // valid URL; fetch discussions
+            getURLInfo(newUrl).then(function(results) {
+                lastUrl = newUrl;
+                updateBadge();
+                setTimeout(checkURL, 1000);
+            });
+        }
+    }
+}
+
+function disableBadge() {
+    setBadge(null, true);
+}
+
+function updateBadge() {
+    let discussionsCount = Object.keys(discussions).length;
+    if (discussionsCount > 0) {
+        setBadge(discussionsCount, false);
+    } else {
+        disableBadge();
     }
 }
 
@@ -44,44 +69,30 @@ function setBadge(badge, disabled) {
 }
 
 function getURLInfo(newUrl, forceRefresh = false) {
-    let currentPosts = [];
+    return new Promise(function(resolve, reject) {
+        let currentURL = new URL(newUrl);
+        if (blacklist.indexOf(currentURL.hostname) > -1) {
+            discussions = {};
 
-    let urls = constructURLs(newUrl);
-    for (let i = 0; i < urls.length; i++) {
-        if (forceRefresh) {
-            currentPosts = currentPosts.concat(fetchPosts(urls[i]));
-            continue;
-        }
-
-        let cacheCheck = localStorage.getItem(urls[i]);
-        if (cacheCheck) {
-            let cachedPosts = JSON.parse(cacheCheck);
-
-            if ((Math.floor(Date.now() / 1000) - cachedPosts["time"]) > 3600) {
-                currentPosts = currentPosts.concat(fetchPosts(urls[i]));
-            } else {
-                currentPosts = currentPosts.concat(cachedPosts["posts"]);
-            }
+            resolve();
         } else {
-            currentPosts = currentPosts.concat(fetchPosts(urls[i]));
+            let urls = constructURLs(newUrl);
+            for (let i = 0; i < urls.length; i++) {
+                urls[i] = fetchPosts(urls[i], forceRefresh);
+            }
+
+            Promise.all(urls).then(function(results) {
+                let posts = [].concat.apply([], results);
+
+                discussions = {};
+                for (let i = 0; i < posts.length; i++) {
+                    discussions[posts[i].data.name] = posts[i];
+                }
+
+                resolve();
+            });
         }
-    }
-
-    discussions = {};
-    for (let i = 0; i < currentPosts.length; i++) {
-        discussions[currentPosts[i].data.name] = currentPosts[i];
-    }
-
-    let discussionsCount = Object.keys(discussions).length;
-    if (discussionsCount > 0) {
-        setBadge(discussionsCount, false);
-    } else {
-        setBadge(null, true);
-    }
-
-    if (forceRefresh) {
-        pushDiscussions();
-    }
+    });
 }
 
 function constructURLs(url) {
@@ -115,31 +126,58 @@ function getYouTubeURLs(url) {
     return urls;
 }
 
-function fetchPosts(url) {
-    let infoRequest = new XMLHttpRequest();
-    infoRequest.open("GET", "https://www.reddit.com/api/info.json?url=" + url, false);
-    infoRequest.send();
+function fetchPosts(searchURL, forceRefresh) {
+    return new Promise(function(resolve, reject) {
+        let performRequest = true;
 
-    if (infoRequest.readyState == 4 && infoRequest.status == 200) {
-        let jsonInfo = JSON.parse(infoRequest.responseText);
+        if (forceRefresh === false) {
+            let cacheCheck = localStorage.getItem(searchURL);
+            if (cacheCheck) {
+                let cachedPosts = JSON.parse(cacheCheck);
 
-        try {
-            localStorage.setItem(url, JSON.stringify({
-                time: Math.floor(Date.now() / 1000),
-                posts: jsonInfo.data.children
-            }));
-        } catch (e) {
-            localStorage.clear();
+                if ((Math.floor(Date.now() / 1000) - cachedPosts["time"]) <= 3600) {
+                    performRequest = false;
+                    resolve(cachedPosts["posts"]);
+                }
+            }
         }
 
-        return jsonInfo.data.children;
-    } else {
-        return [];
-    }
+        if (performRequest) {
+            let infoRequest = new XMLHttpRequest();
+            infoRequest.open("GET", "https://www.reddit.com/api/info.json?url=" + searchURL, true);
+
+            infoRequest.onreadystatechange = function() {
+                if (infoRequest.readyState == 4) {
+                    if (infoRequest.status == 200) {
+                        let jsonInfo = JSON.parse(infoRequest.responseText);
+
+                        try {
+                            localStorage.setItem(searchURL, JSON.stringify({
+                                time: Math.floor(Date.now() / 1000),
+                                posts: jsonInfo.data.children
+                            }));
+                        } catch (e) {
+                            localStorage.clear();
+                        }
+
+                        resolve(jsonInfo.data.children);
+                    } else {
+                        resolve([]);
+                    }
+                }
+            };
+
+            infoRequest.send();
+        }
+    });
 }
 
 window.addEventListener("message", function (msg) {
-    getURLInfo(msg.data.url, true);
+    getURLInfo(msg.data.url, true).then(function(results) {
+        lastUrl = msg.data.url;
+        updateBadge();
+        pushDiscussions();
+    });
 }, false);
 
 safari.application.addEventListener("popover", popoverEvent, false);
@@ -156,3 +194,6 @@ function pushDiscussions() {
         }
     }, window.location.origin);
 }
+
+disableBadge();
+checkURL();
