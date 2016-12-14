@@ -23,7 +23,7 @@ body {
 .link-button {
     text-decoration: none;
     border-radius: 3px;
-    background: linear-gradient(to bottom, rgba(153, 153, 153, 1), rgba(170, 170, 170, 1) 10%);
+    background: linear-gradient(to bottom, rgba(113, 113, 113, 1), rgba(145, 145, 145, 1) 10%);
     color: white;
     font-size: 12px;
     text-align: center;
@@ -59,8 +59,7 @@ body {
 
 .discussion {
     list-style-type: none;
-    padding: 10px;
-    padding-bottom: 15px;
+    padding: 10px 15px 15px 10px;
     background: rgba(255, 255, 255, 0.3);
     display: flex;
 }
