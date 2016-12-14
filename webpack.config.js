@@ -24,6 +24,10 @@
                      'style',
                      'css'
                  ]
+             },
+             {
+                 test: /\.png$/,
+                 loader: 'url'
              }
          ]
      },
@@ -35,7 +39,6 @@
      plugins: [
         new CopyWebpackPlugin([
             { from: path.join(__dirname, 'src/icons/'), to: path.join(__dirname, 'build/Comments from Reddit.safariextension/') },
-            { from: path.join(__dirname, 'src/images/refresh.png'), to: path.join(__dirname, 'build/Comments from Reddit.safariextension/img/refresh.png') },
             { from: path.join(__dirname, 'src/pages/html'), to: path.join(__dirname, 'build/Comments from Reddit.safariextension/html') },
             { from: path.join(__dirname, 'src/safari/Info.plist'), to: path.join(__dirname, 'build/Comments from Reddit.safariextension/Info.plist') },
             { from: path.join(__dirname, 'src/safari/Settings.plist'), to: path.join(__dirname, 'build/Comments from Reddit.safariextension/Settings.plist') },

@@ -1,9 +1,17 @@
-localStorage.clear();
 const ytRegex = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+const timerInterval = 1000;
 var domainBlacklist = safari.extension.settings.domainBlacklist.split(" ");
 var subredditBlacklist = safari.extension.settings.subredditBlacklist.toUpperCase().split(" ");
 var cacheTimeout = safari.extension.settings.cacheTimeout;
-var discussions = {};
+var lastUrl = null;
+var lastTitle = null;
+var lastDiscussions = {};
+var timer;
+
+// start the extension loop
+localStorage.clear();
+disableBadge();
+checkCurrentURL();
 
 safari.extension.settings.addEventListener("change", settingChanged, false);
 function settingChanged(event) {
@@ -16,37 +24,33 @@ function settingChanged(event) {
     }
 
     // refresh current page's posts to reflect new settings
-    lastUrl = "";
-    getURLInfo(safari.application.activeBrowserWindow.activeTab.url.split("#")[0]);
+    getURLInfo(getCurrentURL());
 }
 
-var lastUrl = null;
-function checkURL() {
+function checkCurrentURL() {
     let newUrl;
     if (safari.application.activeBrowserWindow.activeTab.url) {
-        newUrl = safari.application.activeBrowserWindow.activeTab.url.split("#")[0];
+        newUrl = getCurrentURL();
     } else {
         newUrl = null;
     }
 
     if (lastUrl === newUrl) {
         // same URL; do nothing
-        setTimeout(checkURL, 1000);
+        timer = setTimeout(checkCurrentURL, timerInterval);
     } else {
         // new URL; update badge and discussions
         if (newUrl === null) {
             // null URL; disable badge and clear discussions
-            discussions = {};
             lastUrl = null;
+            lastTitle = null;
+            lastDiscussions = {};
             disableBadge();
-            setTimeout(checkURL, 1000);
+
+            timer = setTimeout(checkCurrentURL, timerInterval);
         } else {
             // valid URL; fetch discussions
-            getURLInfo(newUrl).then(function(results) {
-                lastUrl = newUrl;
-                updateBadge();
-                setTimeout(checkURL, 1000);
-            });
+            getURLInfo(newUrl);
         }
     }
 }
@@ -56,7 +60,7 @@ function disableBadge() {
 }
 
 function updateBadge() {
-    let discussionsCount = Object.keys(discussions).length;
+    let discussionsCount = Object.keys(lastDiscussions).length;
     if (discussionsCount > 0) {
         setBadge(discussionsCount, false);
     } else {
@@ -75,11 +79,23 @@ function setBadge(badge, disabled) {
     }
 }
 
-function getURLInfo(newUrl, forceRefresh = false) {
+function getCurrentURL() {
+    return safari.application.activeBrowserWindow.activeTab.url.split("#")[0];
+}
+
+function getURLInfo(newUrl, newTitle = safari.application.activeBrowserWindow.activeTab.title, forceRefresh = false) {
     return new Promise(function(resolve, reject) {
+        clearTimeout(timer);
+
+        lastUrl = newUrl;
+        lastTitle = newTitle;
+
         let currentURL = new URL(newUrl);
         if (domainBlacklist.includes(currentURL.hostname.toUpperCase())) {
-            discussions = {};
+            lastDiscussions = {};
+
+            disableBadge();
+            timer = setTimeout(checkCurrentURL, timerInterval);
 
             resolve();
         } else {
@@ -91,14 +107,17 @@ function getURLInfo(newUrl, forceRefresh = false) {
             Promise.all(urls).then(function(results) {
                 let posts = [].concat.apply([], results);
 
-                discussions = {};
+                lastDiscussions = {};
                 for (let i = 0; i < posts.length; i++) {
                     if (posts[i].data.subreddit) {
                         if (subredditBlacklist.includes(posts[i].data.subreddit.toUpperCase()) === false) {
-                            discussions[posts[i].data.name] = posts[i];
+                            lastDiscussions[posts[i].data.name] = posts[i];
                         }
                     }
                 }
+
+                updateBadge();
+                timer = setTimeout(checkCurrentURL, timerInterval);
 
                 resolve();
             });
@@ -107,14 +126,14 @@ function getURLInfo(newUrl, forceRefresh = false) {
 }
 
 function constructURLs(url) {
-    if (url.indexOf("http") == -1) {
+    if (url.includes("http") === false) {
         return [];
     }
 
     let urls = [url];
     urls.push(url.replace(/^(https?:|)\/\//, ""));
 
-    if (url.indexOf("youtube.com") != -1) {
+    if (url.includes("youtube.com")) {
         urls = urls.concat(getYouTubeURLs(url));
     }
 
@@ -184,9 +203,7 @@ function fetchPosts(searchURL, forceRefresh) {
 }
 
 window.addEventListener("message", function (msg) {
-    getURLInfo(msg.data.url, true).then(function(results) {
-        lastUrl = msg.data.url;
-        updateBadge();
+    getURLInfo(msg.data.url, msg.data.title, true).then(function(results) {
         pushDiscussions();
     });
 }, false);
@@ -198,13 +215,8 @@ function popoverEvent(event) {
 
 function pushDiscussions() {
     safari.extension.popovers[0].contentWindow.postMessage({
-        discussions: discussions,
-        tab: {
-            url: safari.application.activeBrowserWindow.activeTab.url,
-            title: safari.application.activeBrowserWindow.activeTab.title
-        }
+        url: lastUrl,
+        title: lastTitle,
+        discussions: lastDiscussions
     }, window.location.origin);
 }
-
-disableBadge();
-checkURL();

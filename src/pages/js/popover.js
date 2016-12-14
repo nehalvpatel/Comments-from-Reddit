@@ -1,6 +1,4 @@
 require("../css/popover.css");
-var Vue = require("vue/dist/vue.js");
-var currentUrl = "";
 const timeFormats = [
     [60, "seconds", 1], // 60
     [120, "1 minute ago", "1 minute from now"], // 60*2
@@ -16,8 +14,11 @@ const timeFormats = [
     [58060800, "1 year ago", "1 year from now"], // 60*60*24*7*4*12*2
     [2903040000, "years", 29030400] // 60*60*24*7*4*12*100, 60*60*24*7*4*12
 ];
-
+var Vue = require("vue/dist/vue.js");
+var currentUrl = "";
+var currentTitle = "";
 var popover;
+
 document.addEventListener("DOMContentLoaded", function(event) {
     popover = new Vue({
         el: "#app",
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             forceScoreWidth: false,
             isRefreshing: false,
             spinRefreshIcon: false,
+            refreshImage: require("../../images/refresh.png"),
             links: [{
                 permalink: "",
                 title: "You shouldn't be seeing this.",
@@ -43,7 +45,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
                 safari.extension.globalPage.contentWindow.postMessage({
                     action: "refresh",
-                    url: currentUrl
+                    url: currentUrl,
+                    title: currentTitle
                 }, window.location.origin);
             },
             openURL: function (event) {
@@ -58,12 +61,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 window.addEventListener("message", function (msg) {
-    renderDiscussions(msg.data.discussions, msg.data.tab);
+    renderDiscussions(msg.data);
 }, false);
 
-function renderDiscussions(discussions, tab) {
-    let orderIn = safari.extension.settings.orderIn;
+function renderDiscussions(data) {
     let orderUsing = safari.extension.settings.orderUsing;
+    let orderIn = safari.extension.settings.orderIn;
 
     if (orderUsing == "created_utc") {
         orderIn = (orderIn == "asc" ? "desc" : "asc"); // toggle orders to handle timestamps being inverse
@@ -71,25 +74,26 @@ function renderDiscussions(discussions, tab) {
 
     let keysSorted = [];
     if (orderIn == "asc") {
-        keysSorted = Object.keys(discussions).sort(function(a, b){
-            return discussions[a].data[orderUsing] - discussions[b].data[orderUsing];
+        keysSorted = Object.keys(data.discussions).sort(function(a, b){
+            return data.discussions[a].data[orderUsing] - data.discussions[b].data[orderUsing];
         });
     } else if (orderIn == "desc") {
-        keysSorted = Object.keys(discussions).sort(function(a, b){
-            return discussions[b].data[orderUsing] - discussions[a].data[orderUsing];
+        keysSorted = Object.keys(data.discussions).sort(function(a, b){
+            return data.discussions[b].data[orderUsing] - data.discussions[a].data[orderUsing];
         });
     }
 
-    currentUrl = tab.url;
+    currentUrl = data.url;
+    currentTitle = data.title;
 
-    popover.title = tab.title;
+    popover.title = currentTitle;
     popover.resubmitURL = "https://www.reddit.com/submit?resubmit=true&url=" + encodeURIComponent(currentUrl);
     popover.forceScoreWidth = false;
     popover.isRefreshing = false;
 
     let permalinks = [];
     for (let i = 0; i < keysSorted.length; i++) {
-        let entry = discussions[keysSorted[i]].data;
+        let entry = data.discussions[keysSorted[i]].data;
 
         if (entry.score > 100000) {
             popover.forceScoreWidth = true;

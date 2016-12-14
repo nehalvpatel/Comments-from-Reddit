@@ -8,20 +8,20 @@
     <body>
         <div id="app">
             <div id="data" class="content-apart">
-                <span id="title">{{ title }}</span>
+                <span id="title" v-text="title"></span>
                 <span id="buttons" class="content-apart">
-                    <a id="refresh-button" class="link-button" v-on:click.prevent="refreshDiscussions" href="javascript:;" title="Refresh Discussions"><img id="refresh-image" v-bind:class="{ spinInfinite: spinRefreshIcon }" v-on:animationiteration="animationTick" src="../img/refresh.png"></a>
+                    <a id="refresh-button" class="link-button" v-on:click.prevent="refreshDiscussions" href="javascript:;" title="Refresh Discussions"><img id="refresh-image" v-bind:class="{ spinInfinite: spinRefreshIcon }" v-on:animationiteration="animationTick" :src="refreshImage"></a>
                     <a id="repost-button" class="link-button" v-on:click.prevent="openURL" :href="resubmitURL" title="Post to Reddit">Repost</a>
                 </span>
             </div>
             <div id="discussions">
                 <li class="discussion" v-for="link in links">
                     <div class="leftColumn">
-                        <div class="score" v-bind:class="{ bigScore: forceScoreWidth }">{{ link.score }}</div>
+                        <div class="score" v-bind:class="{ bigScore: forceScoreWidth }" v-text="link.score"></div>
                     </div>
                     <div class="rightColumn">
-                        <a class="link" v-on:click.prevent="openURL" :href="link.permalink">{{ link.title }}</a>
-                        <div class="age">{{ link.age }},&nbsp;&nbsp;{{ link.comments }} comments,&nbsp;&nbsp;/r/{{ link.subreddit }}</div>
+                        <a class="link" v-on:click.prevent="openURL" :href="link.permalink" v-text="link.title"></a>
+                        <div class="age"><span v-text="link.age"></span>,&nbsp;&nbsp;<span v-text="link.comments"></span> comments,&nbsp;&nbsp;/r/<span v-text="link.subreddit"></span></div>
                     </div>
                 </li>
                 <div id="loader" v-show="spinRefreshIcon"></div>
