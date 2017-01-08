@@ -3,13 +3,14 @@ const timerInterval = 1000;
 var domainBlacklist = safari.extension.settings.domainBlacklist.split(" ");
 var subredditBlacklist = safari.extension.settings.subredditBlacklist.toUpperCase().split(" ");
 var cacheTimeout = safari.extension.settings.cacheTimeout;
-var lastUrl = null;
-var lastTitle = null;
-var lastDiscussions = {};
+var lastUrl;
+var lastTitle;
+var lastDiscussions;
 var timer;
 
 // start the extension loop
 localStorage.clear();
+resetVariables();
 disableBadge();
 checkCurrentURL();
 
@@ -28,31 +29,37 @@ function settingChanged(event) {
 }
 
 function checkCurrentURL() {
-    let newUrl;
-    if (safari.application.activeBrowserWindow.activeTab.url) {
-        newUrl = getCurrentURL();
-    } else {
-        newUrl = null;
-    }
+    let newUrl = getCurrentURL();
 
     if (lastUrl === newUrl) {
         // same URL; do nothing
-        timer = setTimeout(checkCurrentURL, timerInterval);
+        startTimer();
     } else {
         // new URL; update badge and discussions
         if (newUrl === null) {
             // null URL; disable badge and clear discussions
-            lastUrl = null;
-            lastTitle = null;
-            lastDiscussions = {};
+            resetVariables();
             disableBadge();
-
-            timer = setTimeout(checkCurrentURL, timerInterval);
+            startTimer();
         } else {
             // valid URL; fetch discussions
             getURLInfo(newUrl);
         }
     }
+}
+
+function resetVariables() {
+    lastUrl = null;
+    lastTitle = null;
+    lastDiscussions = {};
+}
+
+function startTimer() {
+    timer = setTimeout(checkCurrentURL, timerInterval);
+}
+
+function stopTimer() {
+    clearTimeout(timer);
 }
 
 function disableBadge() {
@@ -72,6 +79,7 @@ function setBadge(badge, disabled) {
     let itemArray = safari.extension.toolbarItems;
     for (let i = 0; i < itemArray.length; ++i) {
         let item = itemArray[i];
+
         if (item.identifier == "discussionsCount") {
             item.badge = badge;
             item.disabled = disabled;
@@ -79,13 +87,27 @@ function setBadge(badge, disabled) {
     }
 }
 
-function getCurrentURL() {
-    return safari.application.activeBrowserWindow.activeTab.url.split("#")[0];
+function getCurrentTitle() {
+    // http://stackoverflow.com/questions/22311203/how-to-fix-typeerror-null-is-not-an-object-evaluating-event-relatedtarget
+    if (safari && safari.application && safari.application.activeBrowserWindow && safari.application.activeBrowserWindow.activeTab && safari.application.activeBrowserWindow.activeTab.title) {
+        return safari.application.activeBrowserWindow.activeTab.title;
+    } else {
+        return "";
+    }
 }
 
-function getURLInfo(newUrl, newTitle = safari.application.activeBrowserWindow.activeTab.title, forceRefresh = false) {
+function getCurrentURL() {
+    // http://stackoverflow.com/questions/22311203/how-to-fix-typeerror-null-is-not-an-object-evaluating-event-relatedtarget
+    if (safari && safari.application && safari.application.activeBrowserWindow && safari.application.activeBrowserWindow.activeTab && safari.application.activeBrowserWindow.activeTab.url) {
+        return safari.application.activeBrowserWindow.activeTab.url.split("#")[0];
+    } else {
+        return null;
+    }
+}
+
+function getURLInfo(newUrl, newTitle = getCurrentTitle(), forceRefresh = false) {
     return new Promise(function(resolve, reject) {
-        clearTimeout(timer);
+        stopTimer();
 
         lastUrl = newUrl;
         lastTitle = newTitle;
@@ -95,7 +117,7 @@ function getURLInfo(newUrl, newTitle = safari.application.activeBrowserWindow.ac
             lastDiscussions = {};
 
             disableBadge();
-            timer = setTimeout(checkCurrentURL, timerInterval);
+            startTimer();
 
             resolve();
         } else {
@@ -105,9 +127,9 @@ function getURLInfo(newUrl, newTitle = safari.application.activeBrowserWindow.ac
             }
 
             Promise.all(urls).then(function(results) {
-                let posts = [].concat.apply([], results);
-
                 lastDiscussions = {};
+
+                let posts = [].concat.apply([], results);
                 for (let i = 0; i < posts.length; i++) {
                     if (posts[i].data.subreddit) {
                         if (subredditBlacklist.includes(posts[i].data.subreddit.toUpperCase()) === false) {
@@ -117,7 +139,14 @@ function getURLInfo(newUrl, newTitle = safari.application.activeBrowserWindow.ac
                 }
 
                 updateBadge();
-                timer = setTimeout(checkCurrentURL, timerInterval);
+                startTimer();
+
+                resolve();
+            }).catch(function(error) {
+                lastDiscussions = {};
+
+                disableBadge();
+                startTimer();
 
                 resolve();
             });
@@ -165,9 +194,9 @@ function fetchPosts(searchURL, forceRefresh) {
             if (cacheCheck) {
                 let cachedPosts = JSON.parse(cacheCheck);
 
-                if ((Math.floor(Date.now() / 1000) - cachedPosts["time"]) <= cacheTimeout) {
+                if ((Math.floor(Date.now() / 1000) - cachedPosts.time) <= cacheTimeout) {
                     performRequest = false;
-                    resolve(cachedPosts["posts"]);
+                    resolve(cachedPosts.posts);
                 }
             }
         }
@@ -214,6 +243,10 @@ function popoverEvent(event) {
 }
 
 function pushDiscussions() {
+    if (lastUrl === getCurrentURL()) {
+        lastTitle = getCurrentTitle();
+    }
+
     safari.extension.popovers[0].contentWindow.postMessage({
         url: lastUrl,
         title: lastTitle,
